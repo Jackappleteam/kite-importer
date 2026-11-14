@@ -18,7 +18,7 @@ function check(name, fn) {
 }
 const assert = (c, m) => { if (!c) throw new Error(m); };
 
-const files = ["index.html", "converter.js", "page.js", "bookmarklet.js", "favicon.svg", "favicon.ico", "apple-touch-icon.png", ".nojekyll"];
+const files = [".github/ISSUE_TEMPLATE/config.yml", ".github/ISSUE_TEMPLATE/bug.yml", ".github/ISSUE_TEMPLATE/doesnt-convert.yml", ".github/ISSUE_TEMPLATE/feedback.yml", "index.html", "converter.js", "page.js", "bookmarklet.js", "favicon.svg", "favicon.ico", "apple-touch-icon.png", ".nojekyll"];
 check("deployed files exist", () => {
   for (const f of files) assert(fs.existsSync(path.join(root, f)), f + " is missing");
 });
@@ -29,7 +29,7 @@ check("scripts are valid JavaScript", () => {
 
 check("index.html loads what it needs", () => {
   const html = read("index.html");
-  for (const needle of ['src="converter.js"', 'src="page.js"', 'rel="icon"', 'id="paste"', 'id="convert"', 'class="beta"', "<footer>"]) {
+  for (const needle of ["issues/new/choose", 'src="converter.js"', 'src="page.js"', 'rel="icon"', 'id="paste"', 'id="convert"', 'class="beta"', "<footer>"]) {
     assert(html.includes(needle), "index.html lacks " + needle);
   }
 });

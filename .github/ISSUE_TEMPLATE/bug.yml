@@ -1,0 +1,43 @@
+name: Something broke
+description: The bookmark or the converter page didn't work.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. This tool is in beta, so some things are expected to be missing. Use "Command doesn't convert" for those.
+
+        **Don't paste bot tokens, cookies or anything private.** If you paste what the bookmark copied, it can contain your bot's ID and variables, so remove them first.
+  - type: dropdown
+    id: builder
+    attributes:
+      label: Which builder?
+      options: [BotGhost, inventor.bot, Both]
+    validations:
+      required: true
+  - type: dropdown
+    id: step
+    attributes:
+      label: Where did it go wrong?
+      options:
+        - The bookmark didn't show a box
+        - Open converter didn't fill in the page
+        - The page said it couldn't convert
+        - The JSON didn't import into Kite
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Include any message you saw.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 131, Firefox 133, Safari 18
+    validations:
+      required: true

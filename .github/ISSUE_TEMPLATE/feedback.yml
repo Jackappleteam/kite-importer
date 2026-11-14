@@ -1,0 +1,10 @@
+name: Feedback or idea
+description: Anything else, including ideas for the page.
+labels: [feedback]
+body:
+  - type: textarea
+    id: feedback
+    attributes:
+      label: What would you like to tell us?
+    validations:
+      required: true

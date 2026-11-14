@@ -1,0 +1,41 @@
+name: Command doesn't convert
+description: A command, action or block is listed as "can't be imported" or comes out wrong.
+labels: [conversion]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Missing conversions are the main thing to fix in beta. A good report names the action or block, so it can be added.
+
+        **Don't paste bot tokens or private data.** Describe the command or share a cut-down example with no secrets.
+  - type: dropdown
+    id: builder
+    attributes:
+      label: Which builder?
+      options: [BotGhost, inventor.bot]
+    validations:
+      required: true
+  - type: input
+    id: block
+    attributes:
+      label: Action, block or trigger name
+      description: As the builder calls it, for example "Send or Edit a Message" or "Member Join".
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: What did the page do?
+      options:
+        - Listed it as can't be imported
+        - Imported it but something was missing
+        - Imported it but something was wrong
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What should it do in Kite?
+      description: What the command does, and what you expected to get.
+    validations:
+      required: true

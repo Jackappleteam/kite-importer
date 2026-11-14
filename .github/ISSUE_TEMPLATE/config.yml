@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Kite itself (not this tool)
+    url: https://kite.onl
+    about: This is an unofficial converter. Problems with Kite, BotGhost or inventor.bot go to them, not here.
