@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Move to Kite: BotGhost and inventor.bot command converter</title>
+<meta name="description" content="An unofficial bookmark and converter that turns BotGhost or inventor.bot commands into Kite JSON.">
+<style>
+  :root { color-scheme: light; --bg:#fff; --fg:#0c0a09; --muted:#f5f5f4; --muted-fg:#78716c; --border:#e7e5e4; --primary:#f97316; --primary-hover:#ea580c; --primary-fg:#fafaf9; --radius:12px; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 56px 20px 80px; }
+  h1 { font-size: 32px; letter-spacing: -0.02em; margin: 0 0 8px; }
+  h2 { font-size: 20px; margin: 40px 0 8px; }
+  p, li { color: #44403c; }
+  a { color: var(--primary-hover); }
+  .warn { border: 1px solid #fed7aa; border-radius: var(--radius); padding: 14px 16px; background: #fff7ed; color: #7c2d12; font-size: 14px; }
+  .drag { display: inline-block; margin: 12px 0; padding: 12px 22px; border-radius: var(--radius); background: var(--primary); color: var(--primary-fg); font-weight: 600; text-decoration: none; cursor: grab; box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+  .drag:hover { background: var(--primary-hover); }
+  .hint { color: var(--muted-fg); font-size: 14px; }
+  textarea { width: 100%; height: 110px; background: var(--muted); color: #44403c; border: 1px solid var(--border); border-radius: 8px; padding: 8px; font: 12px ui-monospace, monospace; }
+  button { margin: 8px 8px 0 0; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--fg); font: inherit; cursor: pointer; }
+  button:hover { background: var(--muted); }
+  button.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-fg); }
+  button.primary:hover { background: var(--primary-hover); }
+  .row { border-top: 1px solid var(--border); padding: 14px 0; }
+  .name { font-weight: 600; } .tag { color: var(--muted-fg); font-size: 13px; } .notes { color: var(--muted-fg); font-size: 13px; }
+  .row.unsupported .name { color: #dc2626; }
+  details { margin-top: 20px; } summary { cursor: pointer; }
+  #status { margin: 12px 0; color: #44403c; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Move to Kite</h1>
+  <p>Turns some of your <strong>BotGhost</strong> and <strong>inventor.bot</strong> commands into <a href="https://kite.onl">Kite</a> JSON that you paste into Kite's JSON import. Everything runs in your browser, and your commands are never uploaded anywhere.</p>
+
+  <div class="warn">
+    <strong>Unofficial.</strong> This isn't made, endorsed or supported by Kite, BotGhost or inventor.bot. Both builders' terms restrict automated tools and scripts, so check their terms before using it. It only reads your own commands, only when you click it, and it can't move everything: messages and some actions are converted, and anything else is listed so you can rebuild it.
+  </div>
+
+  <h2>1. Add the bookmark</h2>
+  <p>Drag this to your bookmarks bar (Ctrl+Shift+B or Cmd+Shift+B shows the bar).</p>
+  <a class="drag" href="javascript:(function()%7Bfunction%20collect(state)%20%7B%0A%20%20var%20commands%20%3D%20%5B%5D%2C%20events%20%3D%20%5B%5D%2C%20seen%20%3D%20%5B%5D%3B%0A%20%20function%20isItem(v)%20%7B%0A%20%20%20%20return%20typeof%20v.name%20%3D%3D%3D%20%22string%22%20%26%26%0A%20%20%20%20%20%20(Array.isArray(v.actions)%20%7C%7C%20typeof%20v.compressed_tree%20%3D%3D%3D%20%22string%22)%3B%0A%20%20%7D%0A%20%20function%20visit(v%2C%20inEvents%2C%20depth)%20%7B%0A%20%20%20%20if%20(!v%20%7C%7C%20typeof%20v%20!%3D%3D%20%22object%22%20%7C%7C%20depth%20%3E%2012%20%7C%7C%20seen.indexOf(v)%20!%3D%3D%20-1)%20return%3B%0A%20%20%20%20seen.push(v)%3B%0A%20%20%20%20if%20(Array.isArray(v))%20%7B%0A%20%20%20%20%20%20for%20(var%20i%20%3D%200%3B%20i%20%3C%20v.length%3B%20i%2B%2B)%20visit(v%5Bi%5D%2C%20inEvents%2C%20depth%20%2B%201)%3B%0A%20%20%20%20%20%20return%3B%0A%20%20%20%20%7D%0A%20%20%20%20if%20(isItem(v))%20%7B%0A%20%20%20%20%20%20(inEvents%20%3F%20events%20%3A%20commands).push(v)%3B%0A%20%20%20%20%20%20return%3B%0A%20%20%20%20%7D%0A%20%20%20%20for%20(var%20key%20in%20v)%20%7B%0A%20%20%20%20%20%20if%20(Object.prototype.hasOwnProperty.call(v%2C%20key))%20%7B%0A%20%20%20%20%20%20%20%20visit(v%5Bkey%5D%2C%20inEvents%20%7C%7C%20%2Fevent%2Fi.test(key)%2C%20depth%20%2B%201)%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%7D%0A%20%20visit(state%2C%20false%2C%200)%3B%0A%20%20return%20%7B%20kite_botghost_export%3A%201%2C%20commands%3A%20commands%2C%20events%3A%20events%20%7D%3B%0A%7D%0Aasync%20function%20readInventor()%20%7B%0A%20%20var%20base%20%3D%20%22%2Fapi%2Fprojects%2F%22%20%2B%20location.pathname.split(%22%2F%22)%5B2%5D%20%2B%20%22%2Fcomponents%22%3B%0A%20%20var%20list%20%3D%20await%20(await%20fetch(base)).json()%3B%0A%20%20var%20items%20%3D%20%5B%5D%3B%0A%20%20for%20(var%20folder%20of%20list.folders)%20%7B%0A%20%20%20%20for%20(var%20c%20of%20folder.components)%20%7B%0A%20%20%20%20%20%20var%20blob%20%3D%20await%20(await%20fetch(base%20%2B%20%22%2F%22%20%2B%20c.id%20%2B%20%22%2Fversion%2F%22%20%2B%20c.current_version_id%20%2B%20%22%2Fblob%22)).json()%3B%0A%20%20%20%20%20%20items.push(%7B%20name%3A%20c.name%2C%20type%3A%20c.component_type%2C%20blob%3A%20blob%20%7D)%3B%0A%20%20%20%20%7D%0A%20%20%7D%0A%20%20return%20%7B%20kite_inventor_export%3A%201%2C%20items%3A%20items%20%7D%3B%0A%7D%0Afunction%20findStore()%20%7B%0A%20%20var%20all%20%3D%20document.querySelectorAll(%22body%2C%20body%20*%22)%3B%0A%20%20for%20(var%20i%20%3D%200%3B%20i%20%3C%20all.length%3B%20i%2B%2B)%20%7B%0A%20%20%20%20var%20keys%20%3D%20Object.keys(all%5Bi%5D)%3B%0A%20%20%20%20for%20(var%20k%20%3D%200%3B%20k%20%3C%20keys.length%3B%20k%2B%2B)%20%7B%0A%20%20%20%20%20%20if%20(keys%5Bk%5D.indexOf(%22__reactContainer%24%22)%20!%3D%3D%200)%20continue%3B%0A%20%20%20%20%20%20var%20stack%20%3D%20%5Ball%5Bi%5D%5Bkeys%5Bk%5D%5D%5D%2C%20steps%20%3D%200%3B%0A%20%20%20%20%20%20while%20(stack.length%20%26%26%20steps%2B%2B%20%3C%20100000)%20%7B%0A%20%20%20%20%20%20%20%20var%20fiber%20%3D%20stack.pop()%3B%0A%20%20%20%20%20%20%20%20if%20(!fiber)%20continue%3B%0A%20%20%20%20%20%20%20%20var%20store%20%3D%20fiber.memoizedProps%20%26%26%20fiber.memoizedProps.store%3B%0A%20%20%20%20%20%20%20%20if%20(store%20%26%26%20typeof%20store.getState%20%3D%3D%3D%20%22function%22)%20return%20store%3B%0A%20%20%20%20%20%20%20%20if%20(fiber.sibling)%20stack.push(fiber.sibling)%3B%0A%20%20%20%20%20%20%20%20if%20(fiber.child)%20stack.push(fiber.child)%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%7D%0A%20%20return%20null%3B%0A%7D%0Aasync%20function%20read()%20%7B%0A%20%20var%20host%20%3D%20location.hostname%3B%0A%20%20if%20(%2F(%5E%7C%5C.)botghost%5C.com%24%2F.test(host))%20%7B%0A%20%20%20%20var%20store%20%3D%20findStore()%3B%0A%20%20%20%20var%20found%20%3D%20store%20%3F%20collect(store.getState())%20%3A%20null%3B%0A%20%20%20%20if%20(!found%20%7C%7C%20found.commands.length%20%2B%20found.events.length%20%3D%3D%3D%200)%20%7B%0A%20%20%20%20%20%20return%20%7B%20message%3A%20%22No%20commands%20were%20found.%20Open%20your%20bot%2C%20go%20to%20its%20Commands%20page%2C%20wait%20until%20it%20has%20loaded%2C%20and%20click%20this%20bookmark%20again.%22%20%7D%3B%0A%20%20%20%20%7D%0A%20%20%20%20return%20%7B%0A%20%20%20%20%20%20data%3A%20found%2C%0A%20%20%20%20%20%20message%3A%20%22Found%20%22%20%2B%20found.commands.length%20%2B%20%22%20commands%20and%20%22%20%2B%20found.events.length%20%2B%20%22%20custom%20events%20of%20this%20bot.%22%0A%20%20%20%20%7D%3B%0A%20%20%7D%0A%20%20if%20(%2F(%5E%7C%5C.)inventor%5C.bot%24%2F.test(host))%20%7B%0A%20%20%20%20var%20data%20%3D%20null%3B%0A%20%20%20%20if%20(%2F%5E%5C%2Fdash%5C%2F%5B%5E%2F%5D%2B%2F.test(location.pathname))%20%7B%0A%20%20%20%20%20%20try%20%7B%20data%20%3D%20await%20readInventor()%3B%20%7D%20catch%20(e)%20%7B%20data%20%3D%20null%3B%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20var%20flows%20%3D%20data%20%3F%20data.items.filter(function%20(i)%20%7B%20return%20i.type%20%3D%3D%3D%20%22flow%22%3B%20%7D).length%20%3A%200%3B%0A%20%20%20%20if%20(flows%20%3D%3D%3D%200)%20%7B%0A%20%20%20%20%20%20return%20%7B%20message%3A%20%22No%20commands%20were%20found.%20Open%20your%20bot%20in%20the%20inventor.bot%20dashboard%20and%20click%20this%20bookmark%20again.%22%20%7D%3B%0A%20%20%20%20%7D%0A%20%20%20%20return%20%7B%20data%3A%20data%2C%20message%3A%20%22Found%20%22%20%2B%20flows%20%2B%20%22%20commands%20of%20this%20bot.%22%20%7D%3B%0A%20%20%7D%0A%20%20return%20%7B%20message%3A%20%22Open%20your%20bot%20in%20the%20BotGhost%20or%20inventor.bot%20dashboard%20first%2C%20then%20click%20this%20bookmark%20again.%22%20%7D%3B%0A%7D%0Avar%20SITE%20%3D%20%22https%3A%2F%2Fjackappleteam.github.io%2Fkite-importer%2F%22%3B%0Afunction%20el(tag%2C%20style%2C%20text)%20%7B%0A%20%20var%20e%20%3D%20document.createElement(tag)%3B%0A%20%20e.setAttribute(%22style%22%2C%20style)%3B%0A%20%20if%20(text)%20e.textContent%20%3D%20text%3B%0A%20%20return%20e%3B%0A%7D%0Avar%20old%20%3D%20document.getElementById(%22kite-import-helper%22)%3B%0Aif%20(old)%20old.remove()%3B%0Avar%20btn%20%3D%20%22display%3Ainline-block%3Bmargin%3A0%206px%206px%200%3Bpadding%3A6px%2012px%3Bborder%3A0%3Bborder-radius%3A8px%3Bcursor%3Apointer%3Bfont%3Ainherit%3Bbackground%3A%23f97316%3Bcolor%3A%23fafaf9%3B%22%3B%0Avar%20grey%20%3D%20btn%20%2B%20%22background%3A%23f5f5f4%3Bcolor%3A%230c0a09%3Bborder%3A1px%20solid%20%23e7e5e4%3B%22%3B%0Avar%20box%20%3D%20el(%22div%22%2C%20%22position%3Afixed%3Bz-index%3A2147483647%3Btop%3A20px%3Bright%3A20px%3Bwidth%3A320px%3Bpadding%3A16px%3Bborder-radius%3A12px%3Bbackground%3A%23fff%3Bcolor%3A%230c0a09%3Bborder%3A1px%20solid%20%23e7e5e4%3Bfont%3A14px%2F1.5%20Inter%2Csystem-ui%2Csans-serif%3Bbox-shadow%3A0%2010px%2040px%20rgba(0%2C0%2C0%2C.25)%22)%3B%0Abox.id%20%3D%20%22kite-import-helper%22%3B%0Abox.appendChild(el(%22div%22%2C%20%22font-weight%3A600%3Bmargin-bottom%3A2px%22%2C%20%22Move%20to%20Kite%22))%3B%0Abox.appendChild(el(%22div%22%2C%20%22color%3A%2378716c%3Bfont-size%3A12px%3Bmargin-bottom%3A8px%22%2C%20%22Unofficial.%20Not%20made%20by%20Kite%2C%20BotGhost%20or%20inventor.bot.%22))%3B%0Avar%20status%20%3D%20el(%22div%22%2C%20%22color%3A%2344403c%3Bmargin-bottom%3A12px%22%2C%20%22Reading%20your%20bot...%22)%3B%0Abox.appendChild(status)%3B%0Avar%20close%20%3D%20el(%22button%22%2C%20grey%2C%20%22Close%22)%3B%0Aclose.onclick%20%3D%20function%20()%20%7B%20box.remove()%3B%20%7D%3B%0Abox.appendChild(close)%3B%0Adocument.body.appendChild(box)%3B%0A%0Aread().then(function%20(result)%20%7B%0A%20%20status.textContent%20%3D%20result.message%3B%0A%20%20if%20(!result.data)%20return%3B%0A%20%20var%20text%20%3D%20JSON.stringify(result.data)%3B%0A%20%20var%20origin%20%3D%20new%20URL(SITE).origin%3B%0A%0A%20%20var%20open%20%3D%20el(%22button%22%2C%20btn%2C%20%22Open%20converter%22)%3B%0A%20%20open.onclick%20%3D%20function%20()%20%7B%0A%20%20%20%20var%20win%20%3D%20window.open(SITE%2C%20%22kite-import-converter%22)%3B%0A%20%20%20%20function%20onMessage(e)%20%7B%0A%20%20%20%20%20%20if%20(e.origin%20!%3D%3D%20origin%20%7C%7C%20e.source%20!%3D%3D%20win%20%7C%7C%20!e.data%20%7C%7C%20e.data.kiteImport%20!%3D%3D%20%22ready%22)%20return%3B%0A%20%20%20%20%20%20window.removeEventListener(%22message%22%2C%20onMessage)%3B%0A%20%20%20%20%20%20win.postMessage(%7B%20kiteImport%3A%20%22data%22%2C%20text%3A%20text%20%7D%2C%20origin)%3B%0A%20%20%20%20%20%20status.textContent%20%3D%20%22Sent%20to%20the%20converter%20page.%22%3B%0A%20%20%20%20%7D%0A%20%20%20%20window.addEventListener(%22message%22%2C%20onMessage)%3B%0A%20%20%20%20status.textContent%20%3D%20%22Waiting%20for%20the%20converter%20page...%22%3B%0A%20%20%7D%3B%0A%20%20var%20copy%20%3D%20el(%22button%22%2C%20grey%2C%20%22Copy%22)%3B%0A%20%20copy.onclick%20%3D%20function%20()%20%7B%0A%20%20%20%20navigator.clipboard.writeText(text).then(function%20()%20%7B%0A%20%20%20%20%20%20status.textContent%20%3D%20%22Copied.%20Paste%20it%20into%20the%20converter%20page.%22%3B%0A%20%20%20%20%7D%2C%20function%20()%20%7B%20status.textContent%20%3D%20%22Copying%20was%20blocked.%20Use%20Save%20as%20file.%22%3B%20%7D)%3B%0A%20%20%7D%3B%0A%20%20var%20save%20%3D%20el(%22button%22%2C%20grey%2C%20%22Save%20as%20file%22)%3B%0A%20%20save.onclick%20%3D%20function%20()%20%7B%0A%20%20%20%20var%20a%20%3D%20document.createElement(%22a%22)%3B%0A%20%20%20%20a.href%20%3D%20URL.createObjectURL(new%20Blob(%5Btext%5D%2C%20%7B%20type%3A%20%22application%2Fjson%22%20%7D))%3B%0A%20%20%20%20a.download%20%3D%20%22kite-export.json%22%3B%0A%20%20%20%20a.click()%3B%0A%20%20%7D%3B%0A%20%20box.insertBefore(open%2C%20close)%3B%0A%20%20box.insertBefore(copy%2C%20close)%3B%0A%20%20box.insertBefore(save%2C%20close)%3B%0A%7D)%3B%0A%0A%7D)()%3B">Move to Kite</a>
+
+  <h2>2. Open your bot and click it</h2>
+  <p>Open your bot's commands in the BotGhost dashboard, or a bot in the inventor.bot dashboard, wait until it loads, then click the bookmark. Press <strong>Open converter</strong> in the box. This page fills in by itself.</p>
+
+  <h2>3. Copy each command into Kite</h2>
+  <p>Press <strong>Copy Kite JSON</strong> next to a command, then paste it into the JSON import in your Kite app. Check anything marked "check after import".</p>
+
+  <h2>Converter</h2>
+  <p class="hint">If the page didn't fill in, press Copy in the bookmark's box (or Save as file) and paste or choose it here.</p>
+  <textarea id="paste" placeholder="Paste what the bookmark copied"></textarea>
+  <div><button id="convert" class="primary">Convert</button> <input type="file" id="file" accept=".json,application/json"></div>
+  <div id="status"></div>
+  <div id="list"></div>
+
+  <details>
+    <summary>No bookmarks bar? Use the console</summary>
+    <p>Open the dashboard, open the browser console (F12), paste this and press Enter. It is the same script as the bookmark.</p>
+    <textarea readonly onclick="this.select()">(function(){function collect(state) {
+  var commands = [], events = [], seen = [];
+  function isItem(v) {
+    return typeof v.name === "string" &amp;&amp;
+      (Array.isArray(v.actions) || typeof v.compressed_tree === "string");
+  }
+  function visit(v, inEvents, depth) {
+    if (!v || typeof v !== "object" || depth > 12 || seen.indexOf(v) !== -1) return;
+    seen.push(v);
+    if (Array.isArray(v)) {
+      for (var i = 0; i &lt; v.length; i++) visit(v[i], inEvents, depth + 1);
+      return;
+    }
+    if (isItem(v)) {
+      (inEvents ? events : commands).push(v);
+      return;
+    }
+    for (var key in v) {
+      if (Object.prototype.hasOwnProperty.call(v, key)) {
+        visit(v[key], inEvents || /event/i.test(key), depth + 1);
+      }
+    }
+  }
+  visit(state, false, 0);
+  return { kite_botghost_export: 1, commands: commands, events: events };
+}
+async function readInventor() {
+  var base = "/api/projects/" + location.pathname.split("/")[2] + "/components";
+  var list = await (await fetch(base)).json();
+  var items = [];
+  for (var folder of list.folders) {
+    for (var c of folder.components) {
+      var blob = await (await fetch(base + "/" + c.id + "/version/" + c.current_version_id + "/blob")).json();
+      items.push({ name: c.name, type: c.component_type, blob: blob });
+    }
+  }
+  return { kite_inventor_export: 1, items: items };
+}
+function findStore() {
+  var all = document.querySelectorAll("body, body *");
+  for (var i = 0; i &lt; all.length; i++) {
+    var keys = Object.keys(all[i]);
+    for (var k = 0; k &lt; keys.length; k++) {
+      if (keys[k].indexOf("__reactContainer$") !== 0) continue;
+      var stack = [all[i][keys[k]]], steps = 0;
+      while (stack.length &amp;&amp; steps++ &lt; 100000) {
+        var fiber = stack.pop();
+        if (!fiber) continue;
+        var store = fiber.memoizedProps &amp;&amp; fiber.memoizedProps.store;
+        if (store &amp;&amp; typeof store.getState === "function") return store;
+        if (fiber.sibling) stack.push(fiber.sibling);
+        if (fiber.child) stack.push(fiber.child);
+      }
+    }
+  }
+  return null;
+}
+async function read() {
+  var host = location.hostname;
+  if (/(^|\.)botghost\.com$/.test(host)) {
+    var store = findStore();
+    var found = store ? collect(store.getState()) : null;
+    if (!found || found.commands.length + found.events.length === 0) {
+      return { message: "No commands were found. Open your bot, go to its Commands page, wait until it has loaded, and click this bookmark again." };
+    }
+    return {
+      data: found,
+      message: "Found " + found.commands.length + " commands and " + found.events.length + " custom events of this bot."
+    };
+  }
+  if (/(^|\.)inventor\.bot$/.test(host)) {
+    var data = null;
+    if (/^\/dash\/[^/]+/.test(location.pathname)) {
+      try { data = await readInventor(); } catch (e) { data = null; }
+    }
+    var flows = data ? data.items.filter(function (i) { return i.type === "flow"; }).length : 0;
+    if (flows === 0) {
+      return { message: "No commands were found. Open your bot in the inventor.bot dashboard and click this bookmark again." };
+    }
+    return { data: data, message: "Found " + flows + " commands of this bot." };
+  }
+  return { message: "Open your bot in the BotGhost or inventor.bot dashboard first, then click this bookmark again." };
+}
+var SITE = "https://jackappleteam.github.io/kite-importer/";
+function el(tag, style, text) {
+  var e = document.createElement(tag);
+  e.setAttribute("style", style);
+  if (text) e.textContent = text;
+  return e;
+}
+var old = document.getElementById("kite-import-helper");
+if (old) old.remove();
+var btn = "display:inline-block;margin:0 6px 6px 0;padding:6px 12px;border:0;border-radius:8px;cursor:pointer;font:inherit;background:#f97316;color:#fafaf9;";
+var grey = btn + "background:#f5f5f4;color:#0c0a09;border:1px solid #e7e5e4;";
+var box = el("div", "position:fixed;z-index:2147483647;top:20px;right:20px;width:320px;padding:16px;border-radius:12px;background:#fff;color:#0c0a09;border:1px solid #e7e5e4;font:14px/1.5 Inter,system-ui,sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.25)");
+box.id = "kite-import-helper";
+box.appendChild(el("div", "font-weight:600;margin-bottom:2px", "Move to Kite"));
+box.appendChild(el("div", "color:#78716c;font-size:12px;margin-bottom:8px", "Unofficial. Not made by Kite, BotGhost or inventor.bot."));
+var status = el("div", "color:#44403c;margin-bottom:12px", "Reading your bot...");
+box.appendChild(status);
+var close = el("button", grey, "Close");
+close.onclick = function () { box.remove(); };
+box.appendChild(close);
+document.body.appendChild(box);
+
+read().then(function (result) {
+  status.textContent = result.message;
+  if (!result.data) return;
+  var text = JSON.stringify(result.data);
+  var origin = new URL(SITE).origin;
+
+  var open = el("button", btn, "Open converter");
+  open.onclick = function () {
+    var win = window.open(SITE, "kite-import-converter");
+    function onMessage(e) {
+      if (e.origin !== origin || e.source !== win || !e.data || e.data.kiteImport !== "ready") return;
+      window.removeEventListener("message", onMessage);
+      win.postMessage({ kiteImport: "data", text: text }, origin);
+      status.textContent = "Sent to the converter page.";
+    }
+    window.addEventListener("message", onMessage);
+    status.textContent = "Waiting for the converter page...";
+  };
+  var copy = el("button", grey, "Copy");
+  copy.onclick = function () {
+    navigator.clipboard.writeText(text).then(function () {
+      status.textContent = "Copied. Paste it into the converter page.";
+    }, function () { status.textContent = "Copying was blocked. Use Save as file."; });
+  };
+  var save = el("button", grey, "Save as file");
+  save.onclick = function () {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+    a.download = "kite-export.json";
+    a.click();
+  };
+  box.insertBefore(open, close);
+  box.insertBefore(copy, close);
+  box.insertBefore(save, close);
+});
+
+})();</textarea>
+  </details>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

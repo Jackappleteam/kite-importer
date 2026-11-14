@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Move to Kite: BotGhost and inventor.bot command converter</title>
+<meta name="description" content="An unofficial bookmark and converter that turns BotGhost or inventor.bot commands into Kite JSON.">
+<style>
+  :root { color-scheme: light; --bg:#fff; --fg:#0c0a09; --muted:#f5f5f4; --muted-fg:#78716c; --border:#e7e5e4; --primary:#f97316; --primary-hover:#ea580c; --primary-fg:#fafaf9; --radius:12px; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 56px 20px 80px; }
+  h1 { font-size: 32px; letter-spacing: -0.02em; margin: 0 0 8px; }
+  h2 { font-size: 20px; margin: 40px 0 8px; }
+  p, li { color: #44403c; }
+  a { color: var(--primary-hover); }
+  .warn { border: 1px solid #fed7aa; border-radius: var(--radius); padding: 14px 16px; background: #fff7ed; color: #7c2d12; font-size: 14px; }
+  .drag { display: inline-block; margin: 12px 0; padding: 12px 22px; border-radius: var(--radius); background: var(--primary); color: var(--primary-fg); font-weight: 600; text-decoration: none; cursor: grab; box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+  .drag:hover { background: var(--primary-hover); }
+  .hint { color: var(--muted-fg); font-size: 14px; }
+  textarea { width: 100%; height: 110px; background: var(--muted); color: #44403c; border: 1px solid var(--border); border-radius: 8px; padding: 8px; font: 12px ui-monospace, monospace; }
+  button { margin: 8px 8px 0 0; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--fg); font: inherit; cursor: pointer; }
+  button:hover { background: var(--muted); }
+  button.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-fg); }
+  button.primary:hover { background: var(--primary-hover); }
+  .row { border-top: 1px solid var(--border); padding: 14px 0; }
+  .name { font-weight: 600; } .tag { color: var(--muted-fg); font-size: 13px; } .notes { color: var(--muted-fg); font-size: 13px; }
+  .row.unsupported .name { color: #dc2626; }
+  details { margin-top: 20px; } summary { cursor: pointer; }
+  #status { margin: 12px 0; color: #44403c; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Move to Kite</h1>
+  <p>Turns some of your <strong>BotGhost</strong> and <strong>inventor.bot</strong> commands into <a href="https://kite.onl">Kite</a> JSON that you paste into Kite's JSON import. Everything runs in your browser, and your commands are never uploaded anywhere.</p>
+
+  <div class="warn">
+    <strong>Unofficial.</strong> This isn't made, endorsed or supported by Kite, BotGhost or inventor.bot. Both builders' terms restrict automated tools and scripts, so check their terms before using it. It only reads your own commands, only when you click it, and it can't move everything: messages and some actions are converted, and anything else is listed so you can rebuild it.
+  </div>
+
+  <h2>1. Add the bookmark</h2>
+  <p>Drag this to your bookmarks bar (Ctrl+Shift+B or Cmd+Shift+B shows the bar).</p>
+  <a class="drag" href="__BOOKMARKLET__">Move to Kite</a>
+
+  <h2>2. Open your bot and click it</h2>
+  <p>Open your bot's commands in the BotGhost dashboard, or a bot in the inventor.bot dashboard, wait until it loads, then click the bookmark. Press <strong>Open converter</strong> in the box. This page fills in by itself.</p>
+
+  <h2>3. Copy each command into Kite</h2>
+  <p>Press <strong>Copy Kite JSON</strong> next to a command, then paste it into the JSON import in your Kite app. Check anything marked "check after import".</p>
+
+  <h2>Converter</h2>
+  <p class="hint">If the page didn't fill in, press Copy in the bookmark's box (or Save as file) and paste or choose it here.</p>
+  <textarea id="paste" placeholder="Paste what the bookmark copied"></textarea>
+  <div><button id="convert" class="primary">Convert</button> <input type="file" id="file" accept=".json,application/json"></div>
+  <div id="status"></div>
+  <div id="list"></div>
+
+  <details>
+    <summary>No bookmarks bar? Use the console</summary>
+    <p>Open the dashboard, open the browser console (F12), paste this and press Enter. It is the same script as the bookmark.</p>
+    <textarea readonly onclick="this.select()">__SOURCE__</textarea>
+  </details>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
