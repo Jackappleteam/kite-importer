@@ -1,17 +1,21 @@
-# Move to Kite (unofficial, beta)
+# Move to Kite
 
-A bookmark and converter page that turns BotGhost and inventor.bot commands into Kite JSON.
-Not made, endorsed or supported by Kite, BotGhost or inventor.bot. Check each builder's terms before using it.
+An unofficial, beta tool that turns some BotGhost and inventor.bot commands into [Kite](https://kite.onl) JSON.
 
-## Files
-- `index.html`: the page with the draggable bookmark and the converter
-- `converter.js`: the converter, built from the Kite fork's `kite-web/src/lib/botghost` and `inventor`
-- `page.js`: what the converter page does with it
-- `bookmarklet.js`: the small script the bookmark runs. It only reads the open bot and sends it to the page.
-- `build/`: the build script and sources. `build.mjs` needs the Kite fork checked out, and the page address in the bookmark is set with `SITE_URL`.
+Live page: https://jackappleteam.github.io/kite-importer/
 
-## Checks
-`npm test` runs `scripts/check.mjs`, which needs no dependencies. It checks that the files exist and parse, that the bookmark link matches `bookmarklet.js`, that the bookmark talks to nothing but the converter page, and that the converter turns the sample bot in `tests/` into Kite flows. The same checks run on every push and pull request. After a rebuild, run it before committing: a failing "bookmark is the current bookmarklet.js" check means the build output is out of date.
+## How it works
 
-## Deploy
-GitHub Pages, branch `main`, folder `/ (root)`.
+1. **The bookmark** runs on your open BotGhost or inventor.bot dashboard and reads your own commands.
+2. **The converter page** receives them from the bookmark and turns each command into a Kite flow. Nothing is uploaded; it all runs in your browser.
+3. **You paste** each command's JSON into Kite's JSON import.
+
+## What converts
+
+Commands that send messages, plus some actions on BotGhost. Anything it can't convert is listed so you can rebuild it by hand. inventor.bot support is limited to slash commands that send text for now.
+
+## Notes
+
+Not made, endorsed or supported by Kite, BotGhost or inventor.bot. Both builders' terms restrict automated tools and scripts, so check them before using this.
+
+Found something that doesn't convert? [Leave feedback](https://github.com/Jackappleteam/kite-importer/issues/new/choose).
