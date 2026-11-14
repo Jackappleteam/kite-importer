@@ -29,7 +29,7 @@ check("scripts are valid JavaScript", () => {
 
 check("index.html loads what it needs", () => {
   const html = read("index.html");
-  for (const needle of ["issues/new/choose", 'src="converter.js"', 'src="page.js"', 'rel="icon"', 'id="paste"', 'id="convert"', 'class="beta"', "<footer>"]) {
+  for (const needle of ["issues/new/choose", 'class="feedback"', 'src="converter.js"', 'src="page.js"', 'rel="icon"', 'id="paste"', 'id="convert"', 'class="beta"', "<footer>"]) {
     assert(html.includes(needle), "index.html lacks " + needle);
   }
 });

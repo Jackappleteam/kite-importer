@@ -32,6 +32,11 @@
   .name { font-weight: 600; } .tag { color: var(--muted-fg); font-size: 13px; } .notes { color: var(--muted-fg); font-size: 13px; }
   .row.unsupported .name { color: #dc2626; }
   details { margin-top: 20px; } summary { cursor: pointer; }
+  .feedback { margin-top: 48px; padding: 20px 22px; border: 1px solid #fed7aa; border-radius: var(--radius); background: #fff7ed; }
+  .feedback h2 { margin: 0 0 4px; font-size: 18px; }
+  .feedback p { margin: 0 0 12px; color: #7c2d12; font-size: 15px; }
+  .feedback a.btn { display: inline-block; padding: 9px 18px; border-radius: 10px; background: var(--primary); color: var(--primary-fg); font-weight: 600; text-decoration: none; }
+  .feedback a.btn:hover { background: var(--primary-hover); }
   footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted-fg); font-size: 13px; }
   footer p { color: var(--muted-fg); margin: 4px 0; }
   #status { margin: 12px 0; color: #44403c; }
@@ -69,10 +74,16 @@
     <p>Open the dashboard, open the browser console (F12), paste this and press Enter. It is the same script as the bookmark.</p>
     <textarea readonly onclick="this.select()">__SOURCE__</textarea>
   </details>
+  <section class="feedback">
+    <h2>Found a problem, or something missing?</h2>
+    <p>This is a beta, and your reports decide what gets converted next. Tell us which command, action or block didn't work.</p>
+    <a class="btn" href="https://github.com/Jackappleteam/kite-importer/issues/new/choose">Leave feedback</a>
+  </section>
+
   <footer>
     <p>Unofficial tool. Not affiliated with Kite, BotGhost or inventor.bot, and their names belong to them.</p>
     <p>Runs entirely in your browser. Your commands are never uploaded or stored.</p>
-    <p><a href="https://github.com/Jackappleteam/kite-importer/issues/new/choose">Leave feedback</a> &middot; <a href="https://github.com/Jackappleteam/kite-importer">Source on GitHub</a> &middot; <a href="https://kite.onl">Kite</a> &middot; Made by Jackappleteam</p>
+    <p><a href="https://github.com/Jackappleteam/kite-importer">Source on GitHub</a> &middot; <a href="https://kite.onl">Kite</a> &middot; Made by Jackappleteam</p>
   </footer>
 </main>
 <script src="converter.js"></script>
