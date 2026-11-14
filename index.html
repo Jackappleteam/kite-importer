@@ -30,6 +30,8 @@
   .name { font-weight: 600; } .tag { color: var(--muted-fg); font-size: 13px; } .notes { color: var(--muted-fg); font-size: 13px; }
   .row.unsupported .name { color: #dc2626; }
   details { margin-top: 20px; } summary { cursor: pointer; }
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted-fg); font-size: 13px; }
+  footer p { color: var(--muted-fg); margin: 4px 0; }
   #status { margin: 12px 0; color: #44403c; }
 </style>
 </head>
@@ -205,6 +207,11 @@ read().then(function (result) {
 
 })();</textarea>
   </details>
+  <footer>
+    <p>Unofficial tool. Not affiliated with Kite, BotGhost or inventor.bot, and their names belong to them.</p>
+    <p>Runs entirely in your browser. Your commands are never uploaded or stored.</p>
+    <p><a href="https://github.com/Jackappleteam/kite-importer">Source on GitHub</a> &middot; <a href="https://kite.onl">Kite</a> &middot; Made by Jackappleteam</p>
+  </footer>
 </main>
 <script src="app.js"></script>
 </body>
