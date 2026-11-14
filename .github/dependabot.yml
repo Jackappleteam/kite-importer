@@ -1,0 +1,8 @@
+version: 2
+updates:
+  # The site has no npm dependencies, so this only keeps the actions in
+  # .github/workflows up to date.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

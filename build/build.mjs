@@ -6,7 +6,8 @@ const common = { bundle: true, write: false, target: "es2019", alias: { "@": KW 
 
 const conv = (await build({ ...common, entryPoints: ["src/entry.ts"], format: "iife", globalName: "KiteConv", platform: "browser", minify: true })).outputFiles[0].text;
 fs.mkdirSync("dist", { recursive: true });
-fs.writeFileSync("dist/app.js", conv + "\n" + fs.readFileSync("src/page.js", "utf8"));
+fs.writeFileSync("dist/converter.js", conv);
+fs.copyFileSync("src/page.js", "dist/page.js");
 
 const rd = await build({ ...common, stdin: { contents: 'import { helperReadSource } from "' + KW + '/src/lib/importHelper"; export default helperReadSource;', resolveDir: KW, loader: "ts" }, format: "esm", platform: "node" });
 fs.writeFileSync("dist/_reader.mjs", rd.outputFiles[0].text);
@@ -22,4 +23,4 @@ const html = fs.readFileSync("src/index.template.html", "utf8")
 fs.writeFileSync("dist/index.html", html);
 fs.writeFileSync("dist/.nojekyll", "");
 for (const f of ["favicon.svg","favicon.ico","apple-touch-icon.png"]) fs.copyFileSync("src/" + f, "dist/" + f);
-console.log("bookmarklet bytes", script.length, "| app.js", conv.length, "| site", SITE);
+console.log("bookmarklet bytes", script.length, "| converter.js", conv.length, "| site", SITE);

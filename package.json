@@ -1,0 +1,6 @@
+{
+  "name": "kite-importer",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node scripts/check.mjs" }
+}
