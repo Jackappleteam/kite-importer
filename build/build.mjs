@@ -22,5 +22,5 @@ const html = fs.readFileSync("src/index.template.html", "utf8")
   .replace("__SOURCE__", () => script.replace(/&/g, "&amp;").replace(/</g, "&lt;"));
 fs.writeFileSync("dist/index.html", html);
 fs.writeFileSync("dist/.nojekyll", "");
-for (const f of ["favicon.svg","favicon.ico","apple-touch-icon.png", "banner.png"]) fs.copyFileSync("src/" + f, "dist/" + f);
+for (const f of ["favicon.svg","favicon.ico","apple-touch-icon.png", "banner.png", "logo.png"]) fs.copyFileSync("src/" + f, "dist/" + f);
 console.log("bookmarklet bytes", script.length, "| converter.js", conv.length, "| site", SITE);

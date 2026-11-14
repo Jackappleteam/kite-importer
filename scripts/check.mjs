@@ -18,7 +18,7 @@ function check(name, fn) {
 }
 const assert = (c, m) => { if (!c) throw new Error(m); };
 
-const files = ["banner.png", ".github/ISSUE_TEMPLATE/config.yml", ".github/ISSUE_TEMPLATE/bug.yml", ".github/ISSUE_TEMPLATE/doesnt-convert.yml", ".github/ISSUE_TEMPLATE/feedback.yml", "index.html", "converter.js", "page.js", "bookmarklet.js", "favicon.svg", "favicon.ico", "apple-touch-icon.png", ".nojekyll"];
+const files = ["logo.png", "showcase/discord-message.json", "banner.png", ".github/ISSUE_TEMPLATE/config.yml", ".github/ISSUE_TEMPLATE/bug.yml", ".github/ISSUE_TEMPLATE/doesnt-convert.yml", ".github/ISSUE_TEMPLATE/feedback.yml", "index.html", "converter.js", "page.js", "bookmarklet.js", "favicon.svg", "favicon.ico", "apple-touch-icon.png", ".nojekyll"];
 check("deployed files exist", () => {
   for (const f of files) assert(fs.existsSync(path.join(root, f)), f + " is missing");
 });
@@ -40,6 +40,30 @@ check("the link preview image is a 1200x630 PNG at the right address", () => {
   const m = read("index.html").match(/property="og:image" content="([^"]+)"/);
   assert(m && m[1].endsWith("/banner.png"), "og:image does not point at banner.png");
   assert(m[1].startsWith(read("bookmarklet.js").match(/var SITE = "([^"]+)"/)[1]), "og:image is not on the same site as the bookmark");
+});
+
+check("the Discord showcase message is valid Components V2 and links to this site", () => {
+  const msg = JSON.parse(read("showcase/discord-message.json"));
+  assert(msg.flags === 32768, "flags must be 32768 (IS_COMPONENTS_V2)");
+  assert(!msg.content && !msg.embeds, "a Components V2 message can't have content or embeds");
+  const site = read("bookmarklet.js").match(/var SITE = "([^"]+)"/)[1];
+  const urls = [];
+  let texts = 0;
+  (function walk(n) {
+    if (Array.isArray(n)) return n.forEach(walk);
+    if (n && typeof n === "object") {
+      if (n.type === 10) texts += n.content.length;
+      if (typeof n.url === "string") urls.push(n.url);
+      Object.values(n).forEach(walk);
+    }
+  })(msg.components);
+  const logo = fs.readFileSync(path.join(root, "logo.png"));
+  assert(logo[25] === 6, "logo.png must have a transparent background (RGBA)");
+  const thumb = msg.components[0].components.find((c) => c.type === 9).accessory.media.url;
+  assert(thumb.endsWith("/logo.png"), "the side image should be logo.png, not " + thumb);
+  assert(texts <= 4000, "text displays hold " + texts + " characters, over the 4000 limit");
+  assert(urls.some((u) => u === site), "no button links to " + site);
+  for (const u of urls) assert(u.startsWith(site) || u.includes("/Jackappleteam/kite-importer/"), "unexpected link " + u);
 });
 
 check("the bookmark is the current bookmarklet.js", () => {
