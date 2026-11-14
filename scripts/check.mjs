@@ -18,7 +18,7 @@ function check(name, fn) {
 }
 const assert = (c, m) => { if (!c) throw new Error(m); };
 
-const files = [".github/ISSUE_TEMPLATE/config.yml", ".github/ISSUE_TEMPLATE/bug.yml", ".github/ISSUE_TEMPLATE/doesnt-convert.yml", ".github/ISSUE_TEMPLATE/feedback.yml", "index.html", "converter.js", "page.js", "bookmarklet.js", "favicon.svg", "favicon.ico", "apple-touch-icon.png", ".nojekyll"];
+const files = ["banner.png", ".github/ISSUE_TEMPLATE/config.yml", ".github/ISSUE_TEMPLATE/bug.yml", ".github/ISSUE_TEMPLATE/doesnt-convert.yml", ".github/ISSUE_TEMPLATE/feedback.yml", "index.html", "converter.js", "page.js", "bookmarklet.js", "favicon.svg", "favicon.ico", "apple-touch-icon.png", ".nojekyll"];
 check("deployed files exist", () => {
   for (const f of files) assert(fs.existsSync(path.join(root, f)), f + " is missing");
 });
@@ -29,9 +29,17 @@ check("scripts are valid JavaScript", () => {
 
 check("index.html loads what it needs", () => {
   const html = read("index.html");
-  for (const needle of ["issues/new/choose", 'class="feedback"', 'src="converter.js"', 'src="page.js"', 'rel="icon"', 'id="paste"', 'id="convert"', 'class="beta"', "<footer>"]) {
+  for (const needle of ['property="og:image"', 'name="twitter:card"', "issues/new/choose", 'class="feedback"', 'src="converter.js"', 'src="page.js"', 'rel="icon"', 'id="paste"', 'id="convert"', 'class="beta"', "<footer>"]) {
     assert(html.includes(needle), "index.html lacks " + needle);
   }
+});
+
+check("the link preview image is a 1200x630 PNG at the right address", () => {
+  const png = fs.readFileSync(path.join(root, "banner.png"));
+  assert(png.readUInt32BE(16) === 1200 && png.readUInt32BE(20) === 630, "banner.png is not 1200x630");
+  const m = read("index.html").match(/property="og:image" content="([^"]+)"/);
+  assert(m && m[1].endsWith("/banner.png"), "og:image does not point at banner.png");
+  assert(m[1].startsWith(read("bookmarklet.js").match(/var SITE = "([^"]+)"/)[1]), "og:image is not on the same site as the bookmark");
 });
 
 check("the bookmark is the current bookmarklet.js", () => {
