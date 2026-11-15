@@ -23,6 +23,15 @@ check("deployed files exist", () => {
   for (const f of files) assert(fs.existsSync(path.join(root, f)), f + " is missing");
 });
 
+check("discord component embed is valid", () => {
+  const m = read("index.html").match(/<script id="discord:component-embed" type="application\/json">([\s\S]*?)<\/script>/);
+  assert(m, "discord:component-embed script is missing");
+  const data = JSON.parse(m[1]);
+  assert(data.component && data.component.type === 17, "root must be a single container (type 17)");
+  assert(Buffer.byteLength(m[1]) < 3000, "component embed is over 3000 bytes");
+  assert(!/"url":\s*"(?!https:\/\/)/.test(m[1]), "all urls must be absolute https");
+});
+
 check("scripts are valid JavaScript", () => {
   for (const f of ["converter.js", "page.js", "bookmarklet.js"]) new vm.Script(read(f), { filename: f });
 });
